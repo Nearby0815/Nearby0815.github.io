@@ -1,1 +1,1 @@
-
+A simple interactive new years greeting card, where you can tap to launch fireworks at a certain spot, also bursts of up to four fireworks will be launched randomly. If no burst are launched for a certain periode of time due to unfavourable RNG a cascade spaning of the whole screen will be launched.
