@@ -43,7 +43,7 @@ class Firework {
         this.x = tx;
         this.y = height;
         this.coordinates = [];
-        this.sizeMain = Math.random()**3 * 2 + 0.8;
+        this.sizeMain = Math.random()**3 * 1.8 + 0.8;
         this.sizeAlt = Math.random()**3 * 2 + 1.2;
         for (let i = 0; i < 5; i++) {
             this.coordinates.push([this.x, this.y]);
