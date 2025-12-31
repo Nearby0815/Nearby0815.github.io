@@ -127,7 +127,7 @@ class Particle {
 function loop() {
     ctx.font = "bold 80px 'Arial'";
     ctx.strokeStyle = 'hsl(' + Math.floor(hueText) + ', 100%, 50%)';
-    hueText = (hueText + 0.5) % 360;
+    hueText = (hueText + 0.2) % 360;
     ctx.textAlign = "center";
     ctx.strokeText("Happy New Year!", width / 2, height /5);
 
@@ -176,3 +176,4 @@ function getBustSize() {
 }
 
 loop();
+
