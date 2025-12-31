@@ -20,33 +20,31 @@ window.requestAnimFrame = (function () {
         };
 })();
 
-
 ctx.fillStyle = "black";
 ctx.fillRect(0, 0, width, height);
-ctx.lineWidth = 4;
 
+let density = 150;
 
 elCanvas.addEventListener("click", (event) => {
     showInstructions = false;
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top
-    console.log(`Click at (${x}, ${y})`);
     fireworks.push(new Firework(x, y));
     randomSpawnCooldown = 300;
 });
 
 
 
-
 class Firework {
     constructor(tx, ty) {
         this.target = { tx, ty };
-        this.speed = Math.max((width - ty) / 40, 20);
+        this.speed = Math.max((width - ty) / 30, 20);
         this.x = tx;
         this.y = height;
         this.coordinates = [];
-        this.size = Math.random()**3 * 1.5 + 1;
+        this.sizeMain = Math.random()**3 * 2 + 0.8;
+        this.sizeAlt = Math.random()**3 * 2 + 1.2;
         for (let i = 0; i < 5; i++) {
             this.coordinates.push([this.x, this.y]);
         }
@@ -59,12 +57,14 @@ class Firework {
         this.coordinates.unshift([this.x, this.y]);
         if (this.y <= this.target.ty) {
             let hue = Math.floor(Math.random() * 360)
-            for (let i = 0; i < Math.floor(80*this.size); i++) {
-                particles.push(new Particle(this.x, this.y, hue,this.size));
+            let lineWidth = Math.floor(Math.random()*3)+3;
+            for (let i = 0; i < Math.floor(density*this.sizeMain); i++) {
+                particles.push(new Particle(this.x, this.y, hue,this.sizeMain, lineWidth));
             }
             hue = Math.floor(Math.random() * 360)
-            for (let i = 0; i < Math.floor(80*this.size); i++) {
-                particles.push(new Particle(this.x, this.y, hue,this.size));
+            lineWidth = Math.floor(Math.random()*3)+3;
+            for (let i = 0; i < Math.floor(density/2*this.sizeAlt); i++) {
+                particles.push(new Particle(this.x, this.y, hue,this.sizeAlt, lineWidth));
             }
             fireworks.splice(index, 1);
         }
@@ -85,7 +85,7 @@ class Firework {
 
 
 class Particle {
-    constructor(x, y, hue, size) {
+    constructor(x, y, hue, size, width) {
         this.x = x;
         this.y = y;
         this.coordinates = [];
@@ -93,7 +93,6 @@ class Particle {
             this.coordinates.push([this.x, this.y]);
         }
         this.angle = Math.random() * Math.PI * 2;
-        console.log(size);
         this.speed = (Math.random() * 10 + 2 )*(size);
         //this.speed=1;
         this.friction = 0.95;
@@ -101,6 +100,7 @@ class Particle {
         this.decay = Math.random() * 0.015 + 0.005;
         //this.decay = 0;
         this.hue = hue;
+        this.lineWidth = width;
     }
 
     update(index) {
@@ -115,6 +115,7 @@ class Particle {
         }
     }
     draw() {
+        ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = 'hsl(' + this.hue + ', 100%, ' + (this.lightness * 100) + '%)';
         ctx.beginPath();
         ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
@@ -122,6 +123,7 @@ class Particle {
         ctx.stroke();
     }
 }
+
 function loop() {
     ctx.font = "bold 80px 'Arial'";
     ctx.strokeStyle = 'hsl(' + Math.floor(hueText) + ', 100%, 50%)';
@@ -138,6 +140,8 @@ function loop() {
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, width, height);
+
+    ctx.lineWidth = 3;
     fireworks.forEach((firework, index) => {
         firework.update(index);
         firework.draw();
@@ -147,7 +151,6 @@ function loop() {
         particle.update(index);
         particle.draw();
     });
-    console.log(randomSpawnCooldown);
 
     randomSpawnCooldown--;
 
@@ -159,9 +162,9 @@ function loop() {
     }
 
     if (randomSpawnCooldown < -250 ) {
-        randomSpawnCooldown = 0;
-        for (let i = 0; i < Math.floor (width/70)+1; i++) {
-            fireworks.push(new Firework( 70*i, Math.random() * height / 1.5));
+        randomSpawnCooldown = 150;
+        for (let i = 0; i < Math.floor (width/100)+1; i++) {
+            fireworks.push(new Firework( 100*i, Math.random() * height / 1.5));
         }
     }
 
