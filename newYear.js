@@ -172,7 +172,7 @@ function loop() {
 
     randomSpawnCooldown--;
 
-    if (randomSpawnCooldown < 0 && Math.random() < 0.01 ) {
+    if (randomSpawnCooldown < 0 && Math.random() < 0.015 ) {
         randomSpawnCooldown = 0;
         for (let i = 0; i < getBustSize(); i++) {
             fireworks.push(new Firework(Math.random() * width, Math.random() * height / 1.5));
@@ -190,7 +190,7 @@ function loop() {
 }
 
 function getBustSize() {
-    return Math.floor(Math.random()**3*4)+1;
+    return Math.floor(Math.random()**2*5+1.3);
 }
 
 loop();
