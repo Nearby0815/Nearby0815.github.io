@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>NewYearVSchneider</title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+    <script type="module" src="main.js"></script>
+</head>
+
+<body class="flex-cont-vert">
+    <div for="canvas-div">
+        <label>
+            <input type="checkbox" id="option1" name="option1">
+            Coulomb
+        </label>
+
+        <input type="range" id="Slider1" min="0" max="5000" value="1000">
+        <span id="value1">1000</span>
+       
+        <br> <!-------------------------------------------------------------------->
+
+        <label>
+            <input type="checkbox" id="option2" name="option2">
+            Gravity
+        </label>
+
+        <input type="range" id="Slider2" min="0" max="50" value="3">
+        <span id="value2">0.03</span>
+
+         <div>
+            <label>
+                Amount:
+                <input type="number" id="num1" value = "100">
+            </label>
+            <label>
+                Mass:
+                <input type="number" id="num2" value = "10">
+            </label>
+            <label>
+                Charge:
+                <input type="number" id="num3" value = "1">
+            </label>
+            <button id="spawn">Spawn</button>
+        </div>
+        <button id="pause">pause</button>
+        <button id="empty">restart</button>
+        <br>
+
+    </div>
+    <div id="canvas-div">
+        <canvas id="canvas"></canvas>
+    </div>
+</body>
+
+
+</html>
