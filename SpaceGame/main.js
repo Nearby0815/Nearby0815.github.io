@@ -24,26 +24,29 @@ let lastTime = performance.now();
 let fps = 0;
 
 let Entities = [];
+let Bullets = [];
+
+let score = 1000;
 
 
-let diffculty = 0.007;
-const maxSpeed = 350;
+let diffculty = 0.005;
+let maxSpeed = 350;
 
 let mainSwitch = true;
 
 function draw(now) {
     let w = 5;
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(canvas.width, Math.random() * canvas.height, Math.random() * -w / 2, Math.random() * w - w / 2, 50 + Math.random() ** 2 * 100, 1))
+        Entities.push(new Entity(canvas.width + 150, Math.random() * canvas.height, Math.random() * -w / 2, Math.random() * w - w / 2, 50 + Math.random() ** 2 * 100, -1))
     }
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(0, Math.random() * canvas.height, Math.random() * w / 2, Math.random() * w - w / 2, 50 + Math.random() ** 2 * 100, 1))
+        Entities.push(new Entity(-150, Math.random() * canvas.height, Math.random() * w / 2, Math.random() * w - w / 2, 50 + Math.random() ** 2 * 100, -1))
     }
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(Math.random() * canvas.width, canvas.height, Math.random() * w - w / 2, Math.random() * -w / 2, 50 + Math.random() ** 2 * 100, 1))
+        Entities.push(new Entity(Math.random() * canvas.width, canvas.height + 150, Math.random() * w - w / 2, Math.random() * -w / 2, 50 + Math.random() ** 2 * 100, -1))
     }
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(Math.random() * canvas.width, 0, Math.random() * w - w / 2, Math.random() * w / 2, 50 + Math.random() ** 2 * 100, 1))
+        Entities.push(new Entity(Math.random() * canvas.width, -150, Math.random() * w - w / 2, Math.random() * w / 2, 50 + Math.random() ** 2 * 100, -1))
     }
     const delta = now - lastTime;
     fps = 1000 / delta;   // frames per second
@@ -55,6 +58,8 @@ function draw(now) {
     // Example: fill background so you see it working
     ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    player.update();
+    player.draw(ctx);
 
     Entities.forEach(e => {
         Entities.forEach(o => {
@@ -63,12 +68,33 @@ function draw(now) {
                 e.interactCollide(o);
             }
         });
-        e.update();
-        e.draw(ctx);
+        if (e !== null) {
+            e.update();
+            e.draw(ctx);
+        }
     });
 
-    player.update();
-    player.draw(ctx);
+    Bullets.forEach(b => {
+        Entities.forEach(o => {
+            if (b.interactCollide(o)) {
+                Bullets.filter(item => (item !== b));
+            }
+        });
+        if (b !== null) {
+            b.update();
+            b.draw(ctx);
+        }
+    });
+
+
+
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(canvas.width / 2 - 20, 40, 350, 60)
+
+    ctx.font = "60px helvetica";
+    ctx.fillStyle = "white";
+    ctx.fillText("score: " + score, canvas.width / 2 - 20, 100);
 
     //console.log(Entities.length);
     /*ctx.fillStyle = '#0f0';
@@ -87,16 +113,17 @@ class Entity {
 
     static energyLossCollision = 0.90;
 
-    constructor(x, y, vx, vy, r, m) {
+    constructor(x, y, vx, vy, r, p) {
         this.x = x;
         this.y = y;
         this.speed = new Vector(vx, vy)
-        this.color = "rgb(255,0,0)";
+        this.color = p > 900 ? "rgb(100,100,255)" : "rgb(255,0,0)";
         this.r = r;
         this.mass = Math.sqrt(r);
         this.lastx = x;
         this.dx = 0;
         this.mark = false;
+        this.power = p == -1 ? this.mass : p;
     }
 
     interactCoulomb(e) {
@@ -147,7 +174,9 @@ class Entity {
 
             //this.mark = true;
 
-            var del = this.mass < e.mass ? this : e;
+            var del = this.power < e.power ? this : e;
+
+            score += 15*Math.round(del.mass);
 
             Entities = Entities.filter(item => (item !== del));
 
@@ -166,7 +195,7 @@ class Entity {
         this.x += this.speed.x;
         this.y += this.speed.y;
 
-        let margin = 100;
+        let margin = 200;
         if (this.x < -margin || this.x > canvas.width + margin || this.y < -margin || this.y > canvas.height + margin) {
             Entities = Entities.filter(item => (item !== this));
         }
@@ -178,8 +207,9 @@ class Entity {
         !this.mark ? ctx.fillStyle = this.color : ctx.fillStyle = "white";
         ctx.strokeStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x - this.r / 2, this.y - this.r / 2, this.r, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
+        ctx.arc(this.x - this.r/2, this.y - this.r/2, this.r, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
         ctx.fill();
+        ctx.closePath();
         ctx.stroke();
         //this.mark = false;
     }
@@ -189,22 +219,41 @@ class Entity {
 
 class Player extends Entity {
     constructor() {
-        super(canvas.width / 2, canvas.height / 2, 0, -1, 70, 0);
-        this.mass = 0; //just in case this will negate all gravity
-        this.color = "rgb(0,255,0)"
+        super(canvas.width / 2, canvas.height / 2, 0, -1, canvas.width / 400 + canvas.height / 400, -1);
+        this.mass = 30; //just in case this will negate all gravity
+        this.power = 0;
+        this.color = "rgb(255, 136, 0)"
+        this.b = 0;
+        this.schweif = false;
+        this.xl = this.x;
+        this.yl = this.y;
+        this.lvx = this.speed.x;
+        this.lvy = this.speed.y;
     }
 
     update() {
         this.control();
         this.keepInBounds();
         this.checkCollision();
+        this.attract();
         super.update();
+        this.b = Math.max(this.b - 1, 0);
+
+    }
+
+    attract() {
+        Entities.forEach(e => {
+            this.interactCoulomb(e);
+        })
     }
 
     control() {
-        if (keysDown.has("w")||keysDown.has("W")) {
-            if (this.speed.squaredMagnitude() < maxSpeed) { this.speed.scaleUp(1.75); }
+        if ((keysDown.has("w") || keysDown.has("W"))&& score > 0) {
+                this.schweif = true;
+                if (this.speed.squaredMagnitude() < maxSpeed) { this.speed.scaleUp(1.2); }
+                score--;
         } else {
+            this.schweif = false;
             if (this.speed.squaredMagnitude() > 1) { this.speed.scaleUp(0.99); }
         }
 
@@ -214,13 +263,18 @@ class Player extends Entity {
         if (keysDown.has("d") || keysDown.has("D")) {
             this.speed = this.speed.rotate(0.05);
         }
+        if (keysDown.has(" ")) {
+            this.spawnBullet();
+        }
+
     }
 
     keepInBounds() {
-        if (this.x < 0) { this.x = canvas.width }
-        if (this.x > canvas.width) { this.x = 0 }
-        if (this.y < 0) { this.y = canvas.height }
-        if (this.y > canvas.height) { this.y = 0 }
+        let marg = this.r;
+        if (this.x < 0 - marg) { this.x = canvas.width + marg }
+        if (this.x > canvas.width + marg) { this.x = 0 - marg }
+        if (this.y < 0 - marg) { this.y = canvas.height + marg }
+        if (this.y > canvas.height + marg) { this.y = 0 - marg }
     }
 
     checkCollision() {
@@ -231,7 +285,105 @@ class Player extends Entity {
         })
     }
 
+    draw(ctx) {
+        ctx.globalAlpha = 1.0;
+        let orth = (new Vector(this.lvx, this.lvy)).getOrthogonal();
+        let pointiness = this.r * 4;
+        let point = new Vector(this.lvx, this.lvy);
+        point.setLength(pointiness * 1.1);
+        let width = this.r * 1.5;
+        orth.setLength(width * 1.1);
 
+        ctx.fillStyle = "black"
+        ctx.strokeStyle = "black"
+
+        ctx.beginPath();
+        ctx.moveTo(this.lx + orth.x - this.r, this.ly + orth.y - this.r);
+        ctx.lineTo(this.lx + point.x - this.r, this.ly + point.y - this.r);
+        ctx.lineTo(this.lx - orth.x - this.r, this.ly - orth.y - this.r);
+        ctx.lineTo(this.lx + orth.x - this.r, this.ly + orth.y - this.r);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        if (this.schweif) {
+            const x = this.lx - (this.x - this.lx) * 1;
+            const y = this.ly - (this.y - this.ly) * 1;
+            ctx.fillStyle = this.color;
+            ctx.strokeStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(x - this.r, y - this.r, this.r, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
+            ctx.fill();
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        this.lx = this.x;
+        this.ly = this.y;
+        this.lvx = this.speed.x;
+        this.lvy = this.speed.y;
+
+        ctx.fillStyle = "white"
+        ctx.strokeStyle = "white"
+
+        orth = this.speed.getOrthogonal();
+        orth.setLength(width);
+        point = new Vector(this.speed.x, this.speed.y);
+        point.setLength(pointiness);
+
+        ctx.beginPath();
+        ctx.moveTo(this.x + orth.x - this.r, this.y + orth.y - this.r);
+        ctx.lineTo(this.x + point.x - this.r, this.y + point.y - this.r);
+        ctx.lineTo(this.x - orth.x - this.r, this.y - orth.y - this.r);
+        ctx.lineTo(this.x + orth.x - this.r, this.y + orth.y - this.r);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    spawnBullet() {
+        if (this.b === 0) {
+            if (score > 99) {
+                let speed = this.speed.magnitude();
+                let m = 35;
+                Bullets.push(new Bullet(this.x, this.y, this.speed.x / speed * m, this.speed.y / speed * m));
+                this.b = 12;
+                score-=100;
+            }
+        }
+    }
+
+
+}
+
+class Bullet extends Entity {
+
+    constructor(x, y, vx, vy) {
+        super(x, y, vx, vy, 2, 1000);
+        this.lx = [x, x, x, x];
+        this.ly = [y, y, y, y];
+    }
+
+    update() {
+        super.update();
+        this.lx.push(this.x);
+        this.lx.shift();
+        this.ly.push(this.y);
+        this.ly.shift();
+    }
+
+    draw(ctx) {
+        ctx.globalAlpha = 1.0;
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = this.color;
+        ctx.beginPath();
+        ctx.moveTo(this.lx[0], this.ly[0]);
+        ctx.lineTo(this.lx[2], this.ly[2]);
+        ctx.closePath();
+
+
+        ctx.stroke();
+    }
 }
 
 
@@ -246,3 +398,4 @@ draw();
 for (let i = 0; i < 4; i++) {
     Entities.push(new Entity(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * w, Math.random() * w, 50+ Math.random()**2 * 100, 1))
 }*/
+

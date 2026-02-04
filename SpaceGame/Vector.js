@@ -52,6 +52,12 @@ export class Vector {
         return this;
     }
 
+    setLength (l){
+        this.normalize();
+        this.scaleUp(l);
+        return this;
+    }
+
     toString() {
         return `(${this.x}, ${this.y})`;
     }
@@ -64,6 +70,10 @@ export class Vector {
         this.x = cos * x - sin * y;
         this.y = sin * x + cos * y;
         return this;
+    }
+
+    getOrthogonal (){
+        return new Vector(-this.y,this.x);
     }
 }
 
