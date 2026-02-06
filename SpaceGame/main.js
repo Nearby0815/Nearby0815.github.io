@@ -7,7 +7,58 @@ const ctx = canvas.getContext('2d');
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    reset();
 }
+
+
+let worldX = 10;
+let worldY = 10;
+let ratioX = 1;
+let ratioY = 1;
+let scale = 1;
+
+function reset() {
+
+    //word long : 3500
+
+    if (canvas.width > canvas.height) {
+        worldX = 3500;
+        worldY = 3500 * canvas.height / canvas.width;
+    } else {
+        worldY = 3500;
+        worldX = 3500 / canvas.height * canvas.width;
+    }
+
+    worldX = canvas.width;
+    worldY = canvas.height;
+
+    ratioX = canvas.width / worldX;
+    ratioY = canvas.height / worldY;
+
+    scale = canvas.width/3500;
+    maxSpeed = 350 * scale;
+    player.r = 15 * scale;
+
+    mainSwitch = true;
+
+    try {
+        player.x = worldX / 2;
+        player.y = worldY / 2;
+        player.speed = new Vector(0, -1);
+    } finally { }
+
+    console.log(canvas.width, canvas.height, worldX, worldY, ratioX, ratioY);
+
+}
+
+function getScreenX(wx) {
+    return wx;
+}
+
+function getScreenY(wy) {
+    return wy;
+}
+
 
 const keysDown = new Set();
 
@@ -28,6 +79,8 @@ let Bullets = [];
 
 let score = 1000;
 
+let debug = false;
+
 
 let diffculty = 0.005;
 let maxSpeed = 350;
@@ -37,16 +90,16 @@ let mainSwitch = true;
 function draw(now) {
     let w = 5;
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(canvas.width + 150, Math.random() * canvas.height, Math.random() * -w / 2, Math.random() * w - w / 2, 50 + Math.random() ** 2 * 100, -1))
+        Entities.push(new Entity(canvas.width + 150, Math.random() * canvas.height, Math.random() * -w / 2, Math.random() * w - w / 2, (50 + Math.random() ** 2 * 100)*scale, -1))
     }
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(-150, Math.random() * canvas.height, Math.random() * w / 2, Math.random() * w - w / 2, 50 + Math.random() ** 2 * 100, -1))
+        Entities.push(new Entity(-150, Math.random() * canvas.height, Math.random() * w / 2, Math.random() * w - w / 2, ( 50 + Math.random() ** 2 * 100)*scale, -1))
     }
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(Math.random() * canvas.width, canvas.height + 150, Math.random() * w - w / 2, Math.random() * -w / 2, 50 + Math.random() ** 2 * 100, -1))
+        Entities.push(new Entity(Math.random() * canvas.width, canvas.height + 150, Math.random() * w - w / 2, Math.random() * -w / 2, (50 + Math.random() ** 2 * 100)*scale, -1))
     }
     if (Math.random() > 1 - diffculty) {
-        Entities.push(new Entity(Math.random() * canvas.width, -150, Math.random() * w - w / 2, Math.random() * w / 2, 50 + Math.random() ** 2 * 100, -1))
+        Entities.push(new Entity(Math.random() * canvas.width, -150, Math.random() * w - w / 2, Math.random() * w / 2, (50 + Math.random() ** 2 * 100)*scale, -1))
     }
     const delta = now - lastTime;
     fps = 1000 / delta;   // frames per second
@@ -54,7 +107,7 @@ function draw(now) {
 
     //console.log(fps.toFixed(0));
 
-    if (mainSwitch) { requestAnimationFrame(draw) }
+    if (mainSwitch || debug) { requestAnimationFrame(draw) }
     // Example: fill background so you see it working
     ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -69,7 +122,7 @@ function draw(now) {
             }
         });
         if (e !== null) {
-            e.update();
+            e.update(true);
             e.draw(ctx);
         }
     });
@@ -128,7 +181,7 @@ class Entity {
 
     interactCoulomb(e) {
         let Vc = new Vector(this.x - e.x, this.y - e.y)
-        let dSquared = (Vc.magnitude() * 0.1) ** 2;
+        let dSquared = (Vc.magnitude() * 0.1) ** 2 / scale**2;
         let f = Entity.eta04pi / dSquared;
         f *= this.mass * e.mass / 100;
         Vc.normalize();
@@ -142,7 +195,7 @@ class Entity {
 
     interactCollide(e) {
         let Vc = new Vector(e.x - this.x, e.y - this.y)
-        let dSquared = Vc.squaredMagnitude();
+        let dSquared = Vc.squaredMagnitude() / (ratioX * ratioX);
         if (dSquared < (this.r + e.r) ** 2) {
 
             let thetaAB = Vc.getTheta();
@@ -176,7 +229,7 @@ class Entity {
 
             var del = this.power < e.power ? this : e;
 
-            score += 15*Math.round(del.mass);
+            score += 15 * Math.round(del.mass);
 
             Entities = Entities.filter(item => (item !== del));
 
@@ -186,7 +239,7 @@ class Entity {
         return false;
     }
 
-    update() {
+    update(kill) {
         this.dx = this.speed.x - this.lastx;
         if (Math.abs(this.dx) > 0) {
             //console.log(this.dx)
@@ -196,22 +249,32 @@ class Entity {
         this.y += this.speed.y;
 
         let margin = 200;
-        if (this.x < -margin || this.x > canvas.width + margin || this.y < -margin || this.y > canvas.height + margin) {
+        if ((this.x < -margin || this.x > canvas.width + margin || this.y < -margin || this.y > canvas.height + margin) && kill) {
             Entities = Entities.filter(item => (item !== this));
         }
     }
 
     draw(ctx) {
         ctx.globalAlpha = 1.0;
-        const screenCoords = (this.x, this.y);
+        const x = getScreenX(this.x);
+        const y = getScreenY(this.y);
+        const r = this.r;
         !this.mark ? ctx.fillStyle = this.color : ctx.fillStyle = "white";
         ctx.strokeStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.x - this.r/2, this.y - this.r/2, this.r, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
+        ctx.arc(x - r / 2, y - r / 2, r, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
         ctx.fill();
         ctx.closePath();
         ctx.stroke();
         //this.mark = false;
+    }
+
+    keepInBounds() {
+        let marg = this.r;
+        if (this.x < 0 - marg) { this.x = canvas.width + marg }
+        if (this.x > canvas.width + marg) { this.x = 0 - marg }
+        if (this.y < 0 - marg) { this.y = canvas.height + marg }
+        if (this.y > canvas.height + marg) { this.y = 0 - marg }
     }
 
 
@@ -219,7 +282,7 @@ class Entity {
 
 class Player extends Entity {
     constructor() {
-        super(canvas.width / 2, canvas.height / 2, 0, -1, canvas.width / 400 + canvas.height / 400, -1);
+        super(worldX / 2, worldY / 2, 0, -1, 15, -1);
         this.mass = 30; //just in case this will negate all gravity
         this.power = 0;
         this.color = "rgb(255, 136, 0)"
@@ -236,7 +299,7 @@ class Player extends Entity {
         this.keepInBounds();
         this.checkCollision();
         this.attract();
-        super.update();
+        super.update(false);
         this.b = Math.max(this.b - 1, 0);
 
     }
@@ -248,10 +311,11 @@ class Player extends Entity {
     }
 
     control() {
-        if ((keysDown.has("w") || keysDown.has("W"))&& score > 0) {
-                this.schweif = true;
-                if (this.speed.squaredMagnitude() < maxSpeed) { this.speed.scaleUp(1.2); }
-                score--;
+        if ((keysDown.has("w") || keysDown.has("W")) && score > 0) {
+            this.schweif = true;
+            if (this.speed.squaredMagnitude() < maxSpeed) { this.speed.scaleUp(1.2); }
+            score--;
+            if (score === 0) { mainSwitch = false; }
         } else {
             this.schweif = false;
             if (this.speed.squaredMagnitude() > 1) { this.speed.scaleUp(0.99); }
@@ -267,15 +331,13 @@ class Player extends Entity {
             this.spawnBullet();
         }
 
+        if (keysDown.has("p" || "P")) {
+            debug = ! debug;
+        }
+
     }
 
-    keepInBounds() {
-        let marg = this.r;
-        if (this.x < 0 - marg) { this.x = canvas.width + marg }
-        if (this.x > canvas.width + marg) { this.x = 0 - marg }
-        if (this.y < 0 - marg) { this.y = canvas.height + marg }
-        if (this.y > canvas.height + marg) { this.y = 0 - marg }
-    }
+
 
     checkCollision() {
         Entities.forEach(e => {
@@ -286,6 +348,12 @@ class Player extends Entity {
     }
 
     draw(ctx) {
+
+        let tempX = this.x;
+        let tempY = this.y;
+        //this.x *= ratioX;
+        //this.y *= ratioY;
+
         ctx.globalAlpha = 1.0;
         let orth = (new Vector(this.lvx, this.lvy)).getOrthogonal();
         let pointiness = this.r * 4;
@@ -339,16 +407,21 @@ class Player extends Entity {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+
+
+
+        this.x = tempX;
+        this.y = tempY;
     }
 
     spawnBullet() {
         if (this.b === 0) {
             if (score > 99) {
                 let speed = this.speed.magnitude();
-                let m = 35;
+                let m = speed + 15 * scale;
                 Bullets.push(new Bullet(this.x, this.y, this.speed.x / speed * m, this.speed.y / speed * m));
                 this.b = 12;
-                score-=100;
+                score -= 100;
             }
         }
     }
@@ -362,36 +435,47 @@ class Bullet extends Entity {
         super(x, y, vx, vy, 2, 1000);
         this.lx = [x, x, x, x];
         this.ly = [y, y, y, y];
+        this.life = 55;
     }
 
     update() {
-        super.update();
+        this.keepInBounds();
+        super.update(false);
+
         this.lx.push(this.x);
         this.lx.shift();
         this.ly.push(this.y);
         this.ly.shift();
+        this.life--;
+        if (this.life === 0) { Bullets = Bullets.filter(item => (item !== this)); }
+
     }
 
     draw(ctx) {
-        ctx.globalAlpha = 1.0;
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = this.color;
-        ctx.beginPath();
-        ctx.moveTo(this.lx[0], this.ly[0]);
-        ctx.lineTo(this.lx[2], this.ly[2]);
-        ctx.closePath();
+        let x1 = getScreenX(this.lx[0])
+        let y1 = getScreenY(this.ly[0]);
+        let x2 = getScreenX(this.lx[2])
+        let y2 = getScreenY(this.ly[2]);
 
-
-        ctx.stroke();
+        if (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) < canvas.height-100) {
+            ctx.globalAlpha = 1.0;
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = this.color;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.closePath();
+            ctx.stroke();
+        }
     }
 }
 
 
 
 
-
-resizeCanvas();
 const player = new Player();
+resizeCanvas();
+
 
 draw();
 /*
