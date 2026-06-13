@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Google</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body id="body">
+    
+    <main>
+
+        <div class="jusText" id="btn">
+            On/Off<label class="switch">
+                <input type="checkbox" onclick="turnOff(this)" checked>
+                <span class="slider round"></span>
+            </label>
+
+        </div>
+        <script>
+        function turnOff(el) {
+            document.getElementById("body").innerHTML="<div class='jusText'>bye, bye👋"
+            window.setTimeout(b,1000)
+            
+           
+        }
+
+
+        function b(){
+            document.getElementById("body").innerHTML=""
+            document.getElementById("body").style.backgroundColor="black"
+        }
+    </script>
+    </main>
+</body>
