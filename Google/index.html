@@ -39,14 +39,19 @@
                 </div>
 
                 <div class="buttons">
-                    <button>Search</button>
+                    <button onclick="search()">Search</button>
                     <button onclick="calc()">Calculator</button>
                 </div>
             </div>
             <script>
                 function checkEnter(e) {
                     if (e.key == "Enter") {
-                        const sites = [
+                        search()
+                    }
+                }
+
+                function search(){
+                    const sites = [
                             "https://de.wikipedia.org/wiki/Rindfleischetikettierungs%C3%BCberwachungsaufgaben%C3%BCbertragungsgesetz",
                             "https://isaiprofitable.com/",
                             "https://stackoverflow.com/questions/41482348/how-to-write-a-simple-hello-world-program-in-javascript",
@@ -55,10 +60,12 @@
                             "https://nearby0815.github.io/NewYear/NewYear.html",
                             "https://en.wikipedia.org/wiki/Markov_chain",
                             "tryAgain.HTML",
+                            "https://oimo.io/works/clock/",
+                            "https://oimo.io/works/bubbles/",
+                            "https://guthib.io/",
                         ];
                         var random = Math.floor(Math.random() * sites.length);
                         window.location.href = sites[random];
-                    }
                 }
 
                 function calc (){

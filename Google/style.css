@@ -23,7 +23,7 @@ body {
   justify-content: flex-end;
   align-items: center;
   padding: 12px 20px;
-  font-size: 13px;
+  font-size: 17px;
 }
 
 .top-link {
@@ -161,7 +161,7 @@ body {
 /* Footer */
 
 .footer {
-  font-size: 14px;
+  font-size: 18px;
   color: #70757a;
   background: #f2f2f2;
 }
