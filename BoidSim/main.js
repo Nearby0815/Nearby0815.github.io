@@ -235,9 +235,9 @@ option1.setAttribute("checked", true)
 option2.setAttribute("checked", true)
 
 // Add event listeners
-option1.addEventListener("change", () => Co = !Co);
+option1.addEventListener("change", () => Boid.joinCoM = !Boid.joinCoM);
 
-option2.addEventListener("change", () => Gr = !Gr);
+option2.addEventListener("change", () => Boid.avoidBoids = !Boid.avoidBoids);
 
 const slider1 = document.getElementById("Slider1");
 const valueDisplay1 = document.getElementById("value1");
@@ -288,10 +288,14 @@ function folowselected() {
 function drawBoids() {
     let tx = 0;
     let ty = 0;
+    let vx = 0;
+    let vy = 0;
 
     Boid.classList.forEach(b => {
         tx += b.x;
         ty += b.y;
+        vx += b.speed.x;
+        vy += b.speed.y;
     })
 
     tx /= Boid.classList.length;
@@ -299,6 +303,8 @@ function drawBoids() {
 
     Boid.CoM.x = tx;
     Boid.CoM.y = ty;
+
+    Boid.avDir = new Vector(vx,vy).getTheta();
 
 
 
@@ -311,7 +317,7 @@ function drawBoids() {
         entity.update();
 
         const screenCoords = getSceenCoords(entity.x, entity.y);
-        ctx.fillStyle = entity.color;
+        ctx.fillStyle = entity.mark ? "green" : entity.color;
         ctx.strokeStyle = entity.color;
 
 
@@ -333,8 +339,10 @@ function drawBoids() {
     });
     ctx.fillStyle = "black"
     ctx.beginPath();
-    ctx.arc(Boid.CoM.x * scale + offsetX, Boid.CoM.y * scale + offsetY, 3 * scale, 0, 7);
+    ctx.arc(Boid.CoM.x * scale + offsetX, Boid.CoM.y * scale + offsetY, 5 * scale, 0, 7);
     ctx.fill();
+    ctx.moveTo(Boid.CoM.x * scale + offsetX, Boid.CoM.y * scale + offsetY);
+    ctx.lineTo(Boid.CoM.x * scale + offsetX+vx/Boid.classList.length, Boid.CoM.y * scale + offsetY+vx/Boid.classList.length)
     ctx.stroke();
 }
 

@@ -3,6 +3,10 @@ export class Vector {
         return new Vector(p2.x-p1.x,p2.y-p1.y)
     }
 
+    static getSquaredDistance (p1,p2){
+        return (p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y-p1.y);
+    }
+
     constructor(x, y, comp = true) {
         if (comp) {
             this.x = x;
