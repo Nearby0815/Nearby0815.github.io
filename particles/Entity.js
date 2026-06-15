@@ -1,4 +1,4 @@
-import { Vector } from "./Vector.js";
+import { Vector } from "../helperClasses/Vector.js";
 
 export class Entity {
     static eta0 = 8.8541878188e-12
