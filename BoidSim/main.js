@@ -12,7 +12,7 @@ let mapSizeUnscaled = 25000;
 let offsetX = -mapSizeUnscaled / 4;
 let offsetY = -mapSizeUnscaled / 4;
 let mapSize = 5000;
-let entities = [];
+let boids = [];
 let mapData = [];
 let folowing = null;
 canvas.width = screen.width;
@@ -28,7 +28,7 @@ function getHighestTarget(e) {
     let mx = e.clientX;
     let my = e.clientY;
     let highestTarget = null;
-    entities.forEach(entity => {
+    boids.forEach(entity => {
         let ex = entity.x - entity.r;
         let ey = entity.y - entity.r;
         if (worldcoordsMouse.worldX >= ex && worldcoordsMouse.worldX <= ex + entity.r * 2 &&
@@ -195,7 +195,7 @@ canvas.addEventListener("mouseleave", () => isDragging = false);
 
 const restartBtn = document.getElementById("empty");
 restartBtn.addEventListener("click", () => {
-    entities = [];
+    boids = [];
 });
 
 const pauseBtn = document.getElementById("pause");
@@ -224,7 +224,7 @@ spawnBtn.addEventListener("click", () => {
     let r = Math.sqrt(m) * 20;
     let col = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, ' + 50 + '%)'
     for (let i = 0; i < n; i++) {
-        entities.push(new Entity(Math.random() * mapSizeUnscaled, Math.random() * mapSizeUnscaled, 0, 0, r, q, m, col));
+        boids.push(new Entity(Math.random() * mapSizeUnscaled, Math.random() * mapSizeUnscaled, 0, 0, r, q, m, col));
     }
 });
 
@@ -287,23 +287,23 @@ function folowselected() {
 
 function drawBoids() {
     let c = 0;
-    for (let i = 0; i < entities.length; i++) {
+    for (let i = 0; i < boids.length; i++) {
         for (let j = 0; j < i; j++) {
-            entities[i].interact(entities[j], { G: Gr, C: Co })
+            boids[i].interact(boids[j], { G: Gr, C: Co })
             c++;
         }
         console.log(Co,Gr)
     }
 
     c = 0;
-    for (let i = 0; i < entities.length; i++) {
+    for (let i = 0; i < boids.length; i++) {
         for (let j = 0; j < i; j++) {
-            entities[i].interactCollide(entities[j])
+            boids[i].interactCollide(boids[j])
             c++;
         }
     }
     ctx.globalAlpha = 1.0;
-    entities.forEach(entity => {
+    boids.forEach(entity => {
         entity.update();
 
         const screenCoords = getSceenCoords(entity.x, entity.y);
