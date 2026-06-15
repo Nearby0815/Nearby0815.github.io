@@ -1,18 +1,18 @@
 import { Vector } from "../helperClasses/Vector.js";
+import { Boid } from "./Boid.js"
 
 const canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d", { antialias: false });
-let startX;
-let startY;
+let startX = 0;
+let startY = 0;
 let isDragging = false;
 let isPinching = false;
 let lastTouchDist = 0;
 let scale = 1;
 let mapSizeUnscaled = 25000;
-let offsetX = -mapSizeUnscaled / 4;
-let offsetY = -mapSizeUnscaled / 4;
+let offsetX = 0;
+let offsetY = 0;
 let mapSize = 5000;
-let boids = [];
 let mapData = [];
 let folowing = null;
 canvas.width = screen.width;
@@ -28,7 +28,7 @@ function getHighestTarget(e) {
     let mx = e.clientX;
     let my = e.clientY;
     let highestTarget = null;
-    boids.forEach(entity => {
+    Boid.classList.forEach(entity => {
         let ex = entity.x - entity.r;
         let ey = entity.y - entity.r;
         if (worldcoordsMouse.worldX >= ex && worldcoordsMouse.worldX <= ex + entity.r * 2 &&
@@ -195,7 +195,7 @@ canvas.addEventListener("mouseleave", () => isDragging = false);
 
 const restartBtn = document.getElementById("empty");
 restartBtn.addEventListener("click", () => {
-    boids = [];
+    Boid.classList = [];
 });
 
 const pauseBtn = document.getElementById("pause");
@@ -224,15 +224,15 @@ spawnBtn.addEventListener("click", () => {
     let r = Math.sqrt(m) * 20;
     let col = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, ' + 50 + '%)'
     for (let i = 0; i < n; i++) {
-        boids.push(new Entity(Math.random() * mapSizeUnscaled, Math.random() * mapSizeUnscaled, 0, 0, r, q, m, col));
+        Boid.classList.push(new Entity(Math.random() * mapSizeUnscaled, Math.random() * mapSizeUnscaled, 0, 0, r, q, m, col));
     }
 });
 
 const option1 = document.getElementById("option1");
 const option2 = document.getElementById("option2");
 
-option1.setAttribute("checked",true)
-option2.setAttribute("checked",true)
+option1.setAttribute("checked", true)
+option2.setAttribute("checked", true)
 
 // Add event listeners
 option1.addEventListener("change", () => Co = !Co);
@@ -267,7 +267,7 @@ function gameLoop() {
     lastTime = now;
     fps = 1000 / delta; // convert ms to frames per second
     // Draw or update your scene here
-    console.log(`FPS: ${fps.toFixed(0)}`);
+    //console.log(`FPS: ${fps.toFixed(0)}`);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     folowselected();
     drawGrid();
@@ -286,36 +286,56 @@ function folowselected() {
 }
 
 function drawBoids() {
-    let c = 0;
-    for (let i = 0; i < boids.length; i++) {
-        for (let j = 0; j < i; j++) {
-            boids[i].interact(boids[j], { G: Gr, C: Co })
-            c++;
-        }
-        console.log(Co,Gr)
-    }
+    let tx = 0;
+    let ty = 0;
 
-    c = 0;
-    for (let i = 0; i < boids.length; i++) {
-        for (let j = 0; j < i; j++) {
-            boids[i].interactCollide(boids[j])
-            c++;
-        }
-    }
+    Boid.classList.forEach(b => {
+        tx += b.x;
+        ty += b.y;
+    })
+
+    tx /= Boid.classList.length;
+    ty /= Boid.classList.length;
+
+    Boid.CoM.x = tx;
+    Boid.CoM.y = ty;
+
+
+
+    Boid.classList.forEach(b => {
+        b.ctrl();
+    })
+
     ctx.globalAlpha = 1.0;
-    boids.forEach(entity => {
+    Boid.classList.forEach(entity => {
         entity.update();
 
         const screenCoords = getSceenCoords(entity.x, entity.y);
         ctx.fillStyle = entity.color;
         ctx.strokeStyle = entity.color;
+
+
+
+        //tiangle
+        let normSpeed = entity.speed;
+        normSpeed.normalize();
         ctx.beginPath();
-        ctx.arc(screenCoords.screenX - entity.r * scale / 2, screenCoords.screenY - entity.r * scale / 2, entity.r * scale, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
+        ctx.moveTo(screenCoords.screenX - normSpeed.y * entity.r * scale, screenCoords.screenY + normSpeed.x * entity.r * scale);
+        ctx.lineTo(screenCoords.screenX + normSpeed.y * entity.r * scale, screenCoords.screenY - normSpeed.x * entity.r * scale);
+        ctx.lineTo(screenCoords.screenX + normSpeed.x * entity.r * 2 * scale, screenCoords.screenY + normSpeed.y * entity.r * 2 * scale)
         ctx.fill();
         ctx.stroke();
+
+
         entity.mark = false;
 
+
     });
+    ctx.fillStyle = "black"
+    ctx.beginPath();
+    ctx.arc(Boid.CoM.x * scale + offsetX, Boid.CoM.y * scale + offsetY, 3 * scale, 0, 7);
+    ctx.fill();
+    ctx.stroke();
 }
 
 
@@ -323,7 +343,7 @@ function drawGrid() {
     const gs = [1000000, 100000, 10000, 1000, 100, 10, 1, 0.1, 0.01, 0.001, 0.0001];
     let gridSize = gs[Math.floor(Math.log10(scale)) + 4] * scale;
     ctx.lineWidth = Math.floor(2);
-    ctx.strokeStyle = "#545454ff";
+    ctx.strokeStyle = "rgb(230, 230, 230)";
     let phaseY = offsetY % gridSize;
     let phaseX = offsetX % gridSize;
     for (let x = 0; x < canvas.width; x += gridSize) {
@@ -362,7 +382,9 @@ function drawGrid() {
     }
 }
 
-
+for (let i = 0; i < 100; i++) {
+    let a = new Boid(Math.random() * 500, Math.random() * 500, Math.random() * 2 * Math.PI, 0.1);
+}
 
 ctx.imageSmoothingEnabled = false;
 
