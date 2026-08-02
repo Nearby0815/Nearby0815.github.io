@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Calc</title>
+</head>
+
+<body class="flex-cont-vert">
+    <div id="out">
+    </div>
+    <script>
+        var o = document.getElementById("out");
+        function main() {
+            var cur = new Date();
+            var start = new Date("2026-06-29");
+            var mili = cur - start;
+            var days = mili / 3600000 / 24;
+            var weeks = Math.ceil(days / 7);
+            var perc = days / 3;
+            var sold =days * 6;
+            var eo = days * 69;
+            o.textContent = "Tag " + Math.ceil(days) + "/300    |  " + Math.round(perc * 10000) / 10000 + "%   |   Woche " + weeks + "   |   Sold: " + Math.round(sold * 100)/100 + " CHF  |   EO: " + Math.round(eo * 100)/100 + " CHF";
+            requestAnimationFrame(main);
+        }
+        main();
+    </script>
+</body>
+<footer>
+    <p>Vitus Schneider - 2027</p>
+</footer>
+
+
+</html>
