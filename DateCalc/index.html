@@ -4,39 +4,64 @@
 <head>
     <meta charset="utf-8" />
     <title>Calc</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="flex-cont-vert">
     <div id="out">
-    </div> 
+    </div>
+    <div id="percentCircle">
+        <svg viewBox="0 0 120 120">
+            <circle class="bg" cx="60" cy="60" r="50"></circle>
+            <circle class="fg" cx="60" cy="60" r="50"></circle>
+        </svg>
+        <div id="percentText">0%</div>
+    </div>
+
     <script>
         var o = document.getElementById("out");
-        const primes = [2,3,5];
-        function reduce(a,b){
+        const primes = [2, 3, 5];
+        function reduce(a, b) {
             primes.forEach(p => {
-                while (a % p === 0 && b % p === 0){
-                    a/= p;
-                    b/= p;
+                while (a % p === 0 && b % p === 0) {
+                    a /= p;
+                    b /= p;
                 }
             })
-            return ""+a+"/"+b
+            return "" + a + "/" + b
         }
-        function format(s){
-            console.log(s)
+        function format(f) {
+            console.log(f)
+            l = f.split('.')
+            s = l[0]
             c = 0;
             res = "";
-            for (let i = s.length-1; i >= 0 ; i--){
+            for (let i = s.length - 1; i >= 0; i--) {
                 res = s[i] + res
-                if (c===2 && i!= 0){
+                if (c === 2 && i != 0) {
                     res = '\'' + res;
                 }
                 c++;
-                c%=3;
-                
+                c %= 3;
+
+            }
+            if (l.length === 2) {
+                res += '.' + l[1]
             }
             console.log(res)
             return res
         }
+        function updateCircle(perc) {
+            const circle = document.querySelector(".fg");
+            const text = document.getElementById("percentText");
+
+            let p = Math.min(100, Math.max(0, perc)); // clamp 0–100
+            let offset = 314 - (314 * p / 100);
+
+            circle.style.strokeDashoffset = offset;
+            text.textContent = Math.round(p*10000)/10000 + "%";
+        }
+
         function main() {
             var cur = new Date();
             var start = new Date("2026-06-28"); //decreased by one to simplify math
@@ -44,9 +69,11 @@
             var days = mili / 3600000 / 24;
             var weeks = Math.ceil(days / 7);
             var perc = days / 3;
-            var sold =days * 6;
+            var sold = days * 6;
             var eo = days * 69;
-            o.textContent = "Tag " + Math.ceil(days) + "/300     |    "+reduce(Math.ceil(days),300)+"    |  " + Math.round(perc * 10000) / 10000 + "%   |   Woche " + weeks + "   |   Sold: " + Math.round(sold * 100)/100 + " CHF  |   EO: " + Math.round(eo * 100)/100 + " CHF   |    Sekunden: "+format(""+Math.ceil(mili/1000));
+            o.textContent = "Tag " + Math.ceil(days) + "/300     |    " + reduce(Math.ceil(days), 300) + "   |   Woche " + weeks + "   |   Sold: " + format('' + Math.round(sold * 100) / 100) + " CHF  |   EO: " + format('' + Math.round(eo * 100) / 100) + " CHF   |    Sekunden: " + format("" + Math.ceil(mili / 1000));
+            document.getElementById("percentText").textContent = Math.round(perc * 10000) / 10000 + "%"
+            updateCircle(perc)
             requestAnimationFrame(main);
         }
         main();

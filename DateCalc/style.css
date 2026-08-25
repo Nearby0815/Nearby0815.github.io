@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: "Segoe UI", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Output box with glow pulse */
+#out {
+    margin-top: 40px;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, #0a3d3f, #0f5b5e);
+    color: #e8fefe;
+    font-size: 1.4rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 200, 0.25);
+    box-shadow: 0 0 25px rgba(0, 255, 200, 0.25);
+    animation: pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 15px rgba(0,255,200,0.2); }
+    50% { box-shadow: 0 0 35px rgba(0,255,200,0.45); }
+    100% { box-shadow: 0 0 15px rgba(0,255,200,0.2); }
+}
+
+/* --- Percentage Circle --- */
+#percentCircle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-top: 70px;
+}
+
+#percentCircle svg {
+    width: 200px;
+    height: 200px;
+    transform: rotate(-90deg);
+}
+
+#percentCircle circle {
+    fill: none;
+    stroke-width: 12;
+    stroke-linecap: round;
+}
+
+#percentCircle .bg {
+    stroke: #1f2a30;
+}
+
+#percentCircle .fg {
+    stroke: #00e6b8;
+    stroke-dasharray: 314; /* circumference of r=50 */
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 0.5s ease-out;
+}
+
+#percentText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    color: #9cdcdc;
+    font-weight: bold;
+}
