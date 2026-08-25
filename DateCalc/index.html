@@ -8,26 +8,52 @@
 
 <body class="flex-cont-vert">
     <div id="out">
-    </div>
+    </div> 
     <script>
         var o = document.getElementById("out");
+        const primes = [2,3,5];
+        function reduce(a,b){
+            primes.forEach(p => {
+                while (a % p === 0 && b % p === 0){
+                    a/= p;
+                    b/= p;
+                }
+            })
+            return ""+a+"/"+b
+        }
+        function format(s){
+            console.log(s)
+            c = 0;
+            res = "";
+            for (let i = s.length-1; i >= 0 ; i--){
+                res = s[i] + res
+                if (c===2 && i!= 0){
+                    res = '\'' + res;
+                }
+                c++;
+                c%=3;
+                
+            }
+            console.log(res)
+            return res
+        }
         function main() {
             var cur = new Date();
-            var start = new Date("2026-06-29");
+            var start = new Date("2026-06-28"); //decreased by one to simplify math
             var mili = cur - start;
             var days = mili / 3600000 / 24;
             var weeks = Math.ceil(days / 7);
             var perc = days / 3;
             var sold =days * 6;
             var eo = days * 69;
-            o.textContent = "Tag " + Math.ceil(days) + "/300    |  " + Math.round(perc * 10000) / 10000 + "%   |   Woche " + weeks + "   |   Sold: " + Math.round(sold * 100)/100 + " CHF  |   EO: " + Math.round(eo * 100)/100 + " CHF";
+            o.textContent = "Tag " + Math.ceil(days) + "/300     |    "+reduce(Math.ceil(days),300)+"    |  " + Math.round(perc * 10000) / 10000 + "%   |   Woche " + weeks + "   |   Sold: " + Math.round(sold * 100)/100 + " CHF  |   EO: " + Math.round(eo * 100)/100 + " CHF   |    Sekunden: "+format(""+Math.ceil(mili/1000));
             requestAnimationFrame(main);
         }
         main();
     </script>
 </body>
 <footer>
-    <p>Vitus Schneider - 2027</p>
+    <p>Vitus Schneider - 2026</p>
 </footer>
 
 
