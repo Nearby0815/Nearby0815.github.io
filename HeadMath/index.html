@@ -12,7 +12,7 @@
         <div class="timetop" id="timeTot">
             1:20
         </div>
-         <div class="time" id="timeLast">
+        <div class="time" id="timeLast">
             0:00
         </div>
         <div class="disp" id="out">
@@ -20,7 +20,9 @@
         </div>
         <div class="inp">
             <input type="number" id="in">
-
+        </div>
+        <div class="score" id="score">
+            0/0 Ø: N/A
         </div>
     </div>
 
@@ -29,10 +31,15 @@
         const inp = document.getElementById("in");
         const time = document.getElementById("timeTot");
         const timeL = document.getElementById("timeLast");
+        const scoreBord = document.getElementById("score");
 
         var timeS;
         var timeLast;
         var timeCur;
+
+        var total = 0;
+        var Z = 0;
+        var N = 0;
 
         var v1;
         var v2;
@@ -48,12 +55,15 @@
             out.textContent = v1 + " | " + v2;
             timeCur = new Date().getTime();
             if (timeS) {
-                time.textContent = formatTime(timeCur - timeS) ;
-                timeL.textContent = formatTime(timeCur - timeLast) ;
+                time.textContent = formatTime(timeCur - timeS);
+                timeL.textContent = formatTime(timeCur - timeLast);
+                total += timeCur - timeLast;
+                N++;
+                scoreBord.textContent = `${Z}/${N} Ø: ${Math.round(total/N)/1000}s`;
             } else {
                 time.textContent = "0:00"
             }
-            
+
             timeLast = timeCur;
             timeCur = new Date().getTime();
         }
@@ -67,6 +77,7 @@
         function check(result) {
             if (result == v1 * v2 || result == v1 + v2 || result == v1 - v2 || result == v1 / v2) {
                 out.style.backgroundColor = "green";
+                Z++;
             } else {
                 out.style.backgroundColor = "red";
             }
@@ -82,23 +93,34 @@
             const minutes = Math.floor(ms / 60000);
             const seconds = Math.floor((ms % 60000) / 1000);
             var millis = ms % 1000;
-            if (millis<10){
-                millis = '00'+millis;
-            }else if (millis<100){
-                millis = '0'+millis;
+            if (millis < 10) {
+                millis = '00' + millis;
+            } else if (millis < 100) {
+                millis = '0' + millis;
             }
 
-            if (minutes>0){
+            if (minutes > 0) {
                 return `${minutes}:${seconds}:${millis}`;
             } else {
                 return `${seconds}:${millis}`;
             }
         }
 
+        function updateTime (){
+            timeCur = new Date().getTime();
+            if (timeS) {
+                time.textContent = formatTime(timeCur - timeS);
+                timeL.textContent = formatTime(timeCur - timeLast);
+               
+            }
+            requestAnimationFrame(updateTime);
+        }
+
 
 
 
         reroll();
+        updateTime();
     </script>
 </body>
 <footer>

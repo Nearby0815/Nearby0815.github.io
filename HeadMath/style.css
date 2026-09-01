@@ -11,7 +11,7 @@ footer {
 }
 
 .timetop {
-    margin-top: 15%;
+    margin-top: 7%;
     font-size: 10vmin;
     background: #351b92;
     text-align: center;
@@ -21,7 +21,7 @@ footer {
 
 .disp {
     margin-top: 3%;
-    font-size: 20vmin;
+    font-size: 15vmin;
     background: #351b92;
     text-align: center;
 }
@@ -34,7 +34,15 @@ footer {
 }
 
 .inp {
-    height: 30vh;
+    height: 20vh;
+    text-align: center;
+}
+
+.score {
+    margin-top: 7%;
+    height: 15%;
+    font-size: 10vmin;
+    background: #351b92;
     text-align: center;
 }
 
