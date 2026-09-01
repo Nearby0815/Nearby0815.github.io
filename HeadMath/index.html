@@ -24,6 +24,10 @@
         <div class="score" id="score">
             0/0 Ø: N/A
         </div>
+
+        <ul class="log" id ="logList">
+
+        </ul>
     </div>
 
     <script>
@@ -32,10 +36,14 @@
         const time = document.getElementById("timeTot");
         const timeL = document.getElementById("timeLast");
         const scoreBord = document.getElementById("score");
+        const log = document.getElementById("logList");
 
         var timeS;
         var timeLast;
         var timeCur;
+
+        var logEntry = "";
+        var logSuccess;
 
         var total = 0;
         var Z = 0;
@@ -43,6 +51,7 @@
 
         var v1;
         var v2;
+
 
         inp.onclick = (e => {
             timeS = new Date().getTime()
@@ -60,6 +69,7 @@
                 total += timeCur - timeLast;
                 N++;
                 scoreBord.textContent = `${Z}/${N} Ø: ${Math.round(total/N)/1000}s`;
+                logEntry += formatTime(timeCur - timeLast);
             } else {
                 time.textContent = "0:00"
             }
@@ -78,15 +88,26 @@
             if (result == v1 * v2 || result == v1 + v2 || result == v1 - v2 || result == v1 / v2) {
                 out.style.backgroundColor = "green";
                 Z++;
+                logEntry += `${v1} ${result == v1 * v2 ? "x" : result == v1 + v2 ? "+" : result == v1 - v2 ? "-" : "/"} ${v2} = ${result}   |   `;
+                logSuccess = true;
             } else {
                 out.style.backgroundColor = "red";
+                logEntry += `${v1} x ${v2} = ${v1*v2}   |   `;
+                logSuccess = false;
             }
+
+            
         }
 
         function enter() {
             check(inp.value);
             reroll();
             inp.value = "";
+            const li = document.createElement("li");
+            li.textContent = logEntry;
+            li.style.backgroundColor = logSuccess ? "green" : "red"
+            log.appendChild(li);
+            logEntry= '';
         }
 
         function formatTime(ms) {

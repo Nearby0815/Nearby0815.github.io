@@ -57,3 +57,15 @@ input {
     font-size: 20vmin;
 
 }
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    margin-top: 2%;
+    font-size: 5vmin;
+    width: 95%;
+    background: #351b92;
+    text-align: center;
+}
