@@ -3,11 +3,13 @@
     color: white;
 }
 
+
 footer {
     text-align: center;
     font-size: 0.9em;
     color: rgb(200, 200, 255);
 }
+
 
 .disp{
     margin-top: 15%;
@@ -17,6 +19,18 @@ footer {
 }
 
 .inp{
+    height: 30vh;
     text-align: center;
 }
 
+input {
+    margin: 20px;
+    height:100%;
+    width: 95%;
+    border: #351b92;
+    border-style: groove;
+    border-radius: 100px;
+    text-align: center;
+    font-size:20vmin;
+
+}
