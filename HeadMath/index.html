@@ -59,8 +59,10 @@
         })
 
         function reroll() {
+            do {
             v1 = Math.round(Math.random() ** 2 * 40) + 10;
             v2 = Math.round(Math.random() ** 3 * 989) + 10;
+            } while (v1 * v2 > 9999)
             out.textContent = v1 + " | " + v2;
             timeCur = new Date().getTime();
             if (timeS) {
@@ -92,7 +94,7 @@
                 logSuccess = true;
             } else {
                 out.style.backgroundColor = "red";
-                logEntry += `${v1} x ${v2} = ${v1*v2}   |   `;
+                logEntry += `${v1} x ${v2} = ${v1*v2} ≠ ${result} |   `;
                 logSuccess = false;
             }
 
