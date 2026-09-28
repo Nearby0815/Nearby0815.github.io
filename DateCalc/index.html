@@ -64,12 +64,12 @@
 
         function main() {
             var cur = new Date();
-            var start = new Date("2026-06-28"); //decreased by one to simplify math
+            var start = new Date("2026-06-26"); //decreased by one + two to simplify math
             var mili = cur - start;
             var days = mili / 3600000 / 24;
-            var weeks = Math.ceil(days / 7);
+            var weeks = Math.ceil((days-2) / 7);
             var perc = days / 3;
-            var sold = days * 6;
+            var sold = days * 6 + Math.max(days-87)*1.5;
             var eo = days * 69;
             o.textContent = "Tag " + Math.ceil(days) + "/300     |    " + reduce(Math.ceil(days), 300) + "   |   Woche " + weeks + "   |   Sold: " + format('' + Math.round(sold * 100) / 100) + " CHF  |   EO: " + format('' + Math.round(eo * 100) / 100) + " CHF   |    Sekunden: " + format("" + Math.ceil(mili / 1000));
             document.getElementById("percentText").textContent = Math.round(perc * 10000) / 10000 + "%"

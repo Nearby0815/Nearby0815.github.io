@@ -1,0 +1,25 @@
+* {
+    background-color: black;
+    color: white;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.9em;
+    color: rgb(200, 200, 255);
+}
+
+
+button {
+    margin-right: 1em;
+}
+
+input {
+    margin-right: 1em;
+}
+
+button :hover {
+    background-color: darkslategray;
+}
+
+
