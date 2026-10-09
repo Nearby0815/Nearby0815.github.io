@@ -8,7 +8,7 @@
 </head>
 
 <body class="flex-cont-vert">
-    <div id="out">
+    <div id="out" class="card">
     </div>
     <div id="percentCircle">
         <svg viewBox="0 0 120 120">
@@ -17,8 +17,18 @@
         </svg>
         <div id="percentText">0%</div>
     </div>
+    <div  class="card">
+        <input type="date" id="d1">
+        <input type="date" id="d2">
+        <div id="dateDif"></div>
+    </div>
 
     <script>
+        const date1 = document.getElementById("d1");
+        const date2 = document.getElementById("d2");
+        const dateDif = document.getElementById("dateDif");
+        date1.value = new Date("2026-07-04").toISOString().split("T")[0];
+        date2.value = new Date().toISOString().split("T")[0];
         var o = document.getElementById("out");
         const primes = [2, 3, 5];
         function reduce(a, b) {
@@ -31,7 +41,6 @@
             return "" + a + "/" + b
         }
         function format(f) {
-            console.log(f)
             l = f.split('.')
             s = l[0]
             c = 0;
@@ -48,7 +57,6 @@
             if (l.length === 2) {
                 res += '.' + l[1]
             }
-            console.log(res)
             return res
         }
         function updateCircle(perc) {
@@ -59,23 +67,35 @@
             let offset = 314 - (314 * p / 100);
 
             circle.style.strokeDashoffset = offset;
-            text.textContent = Math.round(p*10000)/10000 + "%";
+            text.textContent = Math.round(p * 10000) / 10000 + "%";
         }
 
         function main() {
             var cur = new Date();
-            var start = new Date("2026-06-26"); //decreased by one + two to simplify math
+            var start = new Date("2026-06-27T00:00:00"); //decreased by one + two to simplify math
             var mili = cur - start;
             var days = mili / 3600000 / 24;
-            var weeks = Math.ceil((days-2) / 7);
+            var weeks = Math.ceil((days - 2) / 7);
             var perc = days / 3;
-            var sold = days * 6 + Math.max(days-87)*1.5;
+            var sold = days * 6 + Math.max(days - 87) * 1.5;
             var eo = days * 69;
             o.textContent = "Tag " + Math.ceil(days) + "/300     |    " + reduce(Math.ceil(days), 300) + "   |   Woche " + weeks + "   |   Sold: " + format('' + Math.round(sold * 100) / 100) + " CHF  |   EO: " + format('' + Math.round(eo * 100) / 100) + " CHF   |    Sekunden: " + format("" + Math.ceil(mili / 1000));
             document.getElementById("percentText").textContent = Math.round(perc * 10000) / 10000 + "%"
             updateCircle(perc)
             requestAnimationFrame(main);
         }
+
+        function fDateDif() {
+            const d1 = new Date(date1.value);
+            const d2 = new Date(date2.value);
+            var dif = Math.abs((d1 - d2) / (24 * 60 * 60 * 1000));
+            if (dif || dif == 0) {
+                dateDif.textContent = dif + " Tage";
+            }
+        }
+        date1.onchange = fDateDif;
+        date2.onchange = fDateDif;
+        fDateDif();
         main();
     </script>
 </body>

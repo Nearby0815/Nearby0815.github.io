@@ -1,64 +1,64 @@
+/* --- Global Layout --- */
 body {
     margin: 0;
-    padding: 0;
+    padding: 40px 0;
     background: #0d1117;
     color: #c9d1d9;
     font-family: "Segoe UI", Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 40px;
 }
 
-/* Output box with glow pulse */
-#out {
-    margin-top: 40px;
-    padding: 20px 30px;
+/* --- Shared Card Style --- */
+.card {
     background: linear-gradient(135deg, #0a3d3f, #0f5b5e);
-    color: #e8fefe;
-    font-size: 1.4rem;
-    border-radius: 12px;
+    border-radius: 14px;
+    padding: 25px 35px;
     border: 1px solid rgba(0, 255, 200, 0.25);
     box-shadow: 0 0 25px rgba(0, 255, 200, 0.25);
     animation: pulse 2.5s infinite ease-in-out;
 }
 
+/* Glow animation */
 @keyframes pulse {
     0% { box-shadow: 0 0 15px rgba(0,255,200,0.2); }
     50% { box-shadow: 0 0 35px rgba(0,255,200,0.45); }
     100% { box-shadow: 0 0 15px rgba(0,255,200,0.2); }
 }
 
+/* --- Output Box --- */
+#out {
+    font-size: 1.4rem;
+}
+#out.card {}
+
 /* --- Percentage Circle --- */
 #percentCircle {
     position: relative;
     width: 200px;
     height: 200px;
-    margin-top: 70px;
 }
-
 #percentCircle svg {
     width: 200px;
     height: 200px;
     transform: rotate(-90deg);
 }
-
 #percentCircle circle {
     fill: none;
     stroke-width: 12;
     stroke-linecap: round;
 }
-
 #percentCircle .bg {
     stroke: #1f2a30;
 }
-
 #percentCircle .fg {
     stroke: #00e6b8;
-    stroke-dasharray: 314; /* circumference of r=50 */
+    stroke-dasharray: 314;
     stroke-dashoffset: 314;
     transition: stroke-dashoffset 0.5s ease-out;
 }
-
 #percentText {
     position: absolute;
     top: 50%;
@@ -67,4 +67,37 @@ body {
     font-size: 1.8rem;
     color: #9cdcdc;
     font-weight: bold;
+}
+
+/* --- Date Difference Section --- */
+#dateDif {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    color: #9cdcdc;
+    text-align: center;
+}
+
+/* Inputs styled to match theme */
+input[type="date"] {
+    background: #0f1a20;
+    color: #c9d1d9;
+    border: 1px solid rgba(0, 255, 200, 0.25);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    outline: none;
+    margin: 5px;
+    box-shadow: 0 0 12px rgba(0, 255, 200, 0.15);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+input[type="date"]:focus {
+    border-color: rgba(0, 255, 200, 0.45);
+    box-shadow: 0 0 18px rgba(0, 255, 200, 0.35);
+}
+
+/* --- Footer --- */
+footer {
+    margin-top: 40px;
+    color: #4fa9a9;
+    font-size: 0.9rem;
 }
