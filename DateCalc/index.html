@@ -10,27 +10,105 @@
 <body class="flex-cont-vert">
     <div id="out" class="card">
     </div>
-    <div id="percentCircle">
+    <div class="circle" id="percentCircle">
         <svg viewBox="0 0 120 120">
             <circle class="bg" cx="60" cy="60" r="50"></circle>
             <circle class="fg" cx="60" cy="60" r="50"></circle>
         </svg>
-        <div id="percentText">0%</div>
+        <div class="percText" id="percentText">0%</div>
     </div>
-    <div  class="card">
+    <div class="card">
         <input type="date" id="d1">
         <input type="date" id="d2">
-        <div id="dateDif"></div>
+        <div id="dateDif" class = "dif"></div>
     </div>
+    <div class="circle" id="weekCircle">
+        <svg viewBox="0 0 120 120">
+            <circle class="bg" cx="60" cy="60" r="50"></circle>
+            <circle class="fg" id="c2" cx="60" cy="60" r="50"></circle>
+        </svg>
+        <div class="percText" id="weekPercText">0%</div>
+    </div>
+    <div class="card">
+        Einrücken
+        <input type="date" id="dStart">
+        <input type="time" id="tStart">
+        <br>
+        Abtreten
+        <input type="date" id="dEnd">
+        <input type="time" id="tEnd">
+        <div id="wk" class = "dif"></div>
+
+    </div>
+     <div class = "circle" id="dayCircle">
+        <svg viewBox="0 0 120 120">
+            <circle class="bg" cx="60" cy="60" r="50"></circle>
+            <circle class="fg" id = "c3" cx="60" cy="60" r="50"></circle>
+        </svg>
+        <div class = "percText" id="dayPercText">0%</div>
+    </div>
+
+
 
     <script>
         const date1 = document.getElementById("d1");
         const date2 = document.getElementById("d2");
+        const dStart = document.getElementById("dStart");
+        const dEnd = document.getElementById("dEnd");
+        const tStart = document.getElementById("tStart");
+        const tEnd = document.getElementById("tEnd");
         const dateDif = document.getElementById("dateDif");
+        const weekDIv = document.getElementById("wk");
+        const weekPercText = document.getElementById("weekPercText");
+        const dayPercText = document.getElementById("dayPercText");
         date1.value = new Date("2026-07-04").toISOString().split("T")[0];
         date2.value = new Date().toISOString().split("T")[0];
         var o = document.getElementById("out");
         const primes = [2, 3, 5];
+
+        function formatTime(duration) {
+            const dLength = 1000 * 60 * 60 * 24;
+            const hoursTot = duration / 1000 / 3600;
+            const days = (duration - (duration % dLength)) / dLength;
+            const hours = Math.round(((duration % dLength)) / (1000 * 60 * 60));
+            return days + " Tage " + hours + " Stunden (" + Math.round(hoursTot) + "h)";
+        }
+
+        function week() {
+            const wStart = new Date(dStart.value + 'T' + tStart.value);
+            const wEnd = new Date(dEnd.value + 'T' + tEnd.value);
+            const wCur = new Date();
+            const duration = wEnd - wStart;
+            const prog = wCur - wStart;
+            const perc = Math.round(prog / duration * 1000000) / 10000;
+            const sTot = formatTime(duration);
+            const sRest = formatTime(duration - prog);
+            wk.textContent = sTot + " noch " + sRest;
+            weekPercText.textContent = perc + "%"
+
+            const circle = document.getElementById("c2");
+
+            let p = Math.min(100, Math.max(0, perc)); // clamp 0–100
+            let offset = 314 - (314 * p / 100);
+
+            circle.style.strokeDashoffset = offset;
+
+            
+        }
+
+        function day (){
+            let td = new Date();
+            let perc = Math.round((td%(1000*60*60*24))/(1000*60*60*24)*1000000)/10000;
+            dayPercText.textContent = perc + "%"
+
+            const circle = document.getElementById("c3");
+
+            let p = Math.min(100, Math.max(0, perc)); // clamp 0–100
+            let offset = 314 - (314 * p / 100);
+
+            circle.style.strokeDashoffset = offset;
+        }
+
         function reduce(a, b) {
             primes.forEach(p => {
                 while (a % p === 0 && b % p === 0) {
@@ -82,6 +160,8 @@
             o.textContent = "Tag " + Math.ceil(days) + "/300     |    " + reduce(Math.ceil(days), 300) + "   |   Woche " + weeks + "   |   Sold: " + format('' + Math.round(sold * 100) / 100) + " CHF  |   EO: " + format('' + Math.round(eo * 100) / 100) + " CHF   |    Sekunden: " + format("" + Math.ceil(mili / 1000));
             document.getElementById("percentText").textContent = Math.round(perc * 10000) / 10000 + "%"
             updateCircle(perc)
+            week();
+            day();
             requestAnimationFrame(main);
         }
 
@@ -95,7 +175,12 @@
         }
         date1.onchange = fDateDif;
         date2.onchange = fDateDif;
+        dStart.onchange = week;
+        dEnd.onchange = week;
+        tStart.onchange = week;
+        tEnd.onchange = week;
         fDateDif();
+        week();
         main();
     </script>
 </body>

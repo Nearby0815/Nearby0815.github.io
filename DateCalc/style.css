@@ -32,34 +32,33 @@ body {
 #out {
     font-size: 1.4rem;
 }
-#out.card {}
 
 /* --- Percentage Circle --- */
-#percentCircle {
+.circle {
     position: relative;
     width: 200px;
     height: 200px;
 }
-#percentCircle svg {
+.circle svg {
     width: 200px;
     height: 200px;
     transform: rotate(-90deg);
 }
-#percentCircle circle {
+.circle circle {
     fill: none;
     stroke-width: 12;
     stroke-linecap: round;
 }
-#percentCircle .bg {
+.circle .bg {
     stroke: #1f2a30;
 }
-#percentCircle .fg {
+.circle .fg {
     stroke: #00e6b8;
     stroke-dasharray: 314;
     stroke-dashoffset: 314;
     transition: stroke-dashoffset 0.5s ease-out;
 }
-#percentText {
+.percText {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -70,7 +69,7 @@ body {
 }
 
 /* --- Date Difference Section --- */
-#dateDif {
+.dif {
     margin-top: 15px;
     font-size: 1.2rem;
     color: #9cdcdc;
@@ -78,7 +77,7 @@ body {
 }
 
 /* Inputs styled to match theme */
-input[type="date"] {
+input {
     background: #0f1a20;
     color: #c9d1d9;
     border: 1px solid rgba(0, 255, 200, 0.25);
@@ -90,7 +89,7 @@ input[type="date"] {
     box-shadow: 0 0 12px rgba(0, 255, 200, 0.15);
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
-input[type="date"]:focus {
+input:focus {
     border-color: rgba(0, 255, 200, 0.45);
     box-shadow: 0 0 18px rgba(0, 255, 200, 0.35);
 }
